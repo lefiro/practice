@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.sp
 import ci.nsu.moble.main.ui.theme.PracticeTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 private val colorMap = mapOf(
     "Red" to Color.Red,
@@ -47,8 +49,8 @@ class MainActivity : ComponentActivity() {
         val secondPart = helloAndroid.takeLast(7)
 
         setContent {
-            var textInput = remember{mutableStateOf("")}
-            var buttonColor = remember{mutableStateOf(Color.Gray)}
+            var textInput by remember {mutableStateOf("")}
+            var buttonColor by remember {mutableStateOf(Color.Gray)}
             Column(modifier = Modifier.padding(top = 80.dp, start = 20.dp, end = 20.dp)
                 .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -57,17 +59,27 @@ class MainActivity : ComponentActivity() {
                 Row()
                 {
                     TextField(modifier = Modifier.fillMaxWidth(),
-                        value = textInput.value,
-                        onValueChange = { newText ->
-                            textInput.value = newText},
+                        value = textInput,
+                        onValueChange = { textInput = it },
                         label = {Text("Enter color")}
                     )
                 }
                 Row(modifier = Modifier.padding(bottom=25.dp)
-                    .background(Color.Green)
+                    .background(buttonColor)
                     .fillMaxWidth())
                 {
-                    Box(modifier = Modifier.clickable(onClick = {})
+                    Box(modifier = Modifier
+                        .clickable{
+                            val foundColor = colorMap[textInput.trim()]
+                            if(foundColor != null)
+                            {
+                               buttonColor = foundColor
+                            }
+                            else
+                            {
+                                android.util.Log.d("ColorSearch", "Пользовательский цвет '$textInput' не найден")
+                            }
+                        }
                         .padding(20.dp))
                     {
                         Text(text = "Apply color",
